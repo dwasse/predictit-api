@@ -13,8 +13,13 @@ class Predictit:
         raise Exception("Bad response from predictit API: " + str(response.status_code))
 
     def get_all_markets(self):
-        response = requests.get(URL + "marketdata/all/").json()
+        response = requests.get(URL + "marketdata/all/")
         return self._parse_response(response)
+
+    def get_binary_markets(self):
+        market_data = self.get_all_markets()
+        if market_data is not None:
+            return [m for m in market_data['markets'] if len(m['contracts']) == 1]
 
     def get_market_data(self, market_id):
         response = requests.get(URL + "marketdata/markets/" + str(market_id))
@@ -54,5 +59,5 @@ class Predictit:
 
 if __name__ == "__main__":
     client = Predictit()
-    market_data = client.get_all_markets()
+    market_data = client.get_binary_markets()
     print(market_data)
